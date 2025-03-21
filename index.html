@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot SUPTECH SANTÉ</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-buttons">
+                <button id="translate-btn">Traduire en Arabe</button>
+                <button id="dark-mode-btn">Mode Sombre</button>
+                <button id="quiz-btn">Aide</button>
+            </div>
+        </div>
+
+        <div class="questions-section">
+            <button id="start-questions-btn">Commencer les questions</button>
+            <div id="current-question" class="hidden">
+                <h3 id="question-text"></h3>
+                <p id="answer-text" class="hidden"></p>
+                <button id="next-question-btn" class="hidden">Question suivante</button>
+            </div>
+        </div>
+
+        <div class="chat-box" id="chat-box">
+            <div class="chat-message bot-message">Bonjour ! Comment puis-je vous aider aujourd'hui ?</div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Tapez votre question ici...">
+            <button id="send-btn">Envoyer</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
