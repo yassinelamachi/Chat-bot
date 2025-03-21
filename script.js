@@ -10,7 +10,6 @@ const translateBtn = document.getElementById('translate-btn');
 const darkModeBtn = document.getElementById('dark-mode-btn');
 const body = document.body;
 
-
 // Base de données en français
 const database = {
     "Qu'est-ce que SUPTECH SANTÉ ?": "SUPTECH SANTÉ est une école spécialisée en génie biomédical et en techniques de santé.",
@@ -85,12 +84,41 @@ function addMessage(message, isUser) {
 }
 
 // Envoyer une question
-sendBtn.addEventListener('click', () => {
+sendBtn.addEventListener('click', async () => {
     const question = userInput.value.trim();
     if (question) {
         addMessage(question, true); // Afficher la question de l'utilisateur
-        const answer = currentLanguage === 'fr' ? database[question] || databaseArabic[question] || "Je ne comprends pas votre question." : databaseArabic[question] || database[question] || "لا أفهم سؤالك";
-        addMessage(answer, false); // Afficher la réponse du chatbot
+
+        // Vérifier si la question existe dans la base de données
+        const answer = currentLanguage === 'fr' ? database[question] || databaseArabic[question] : databaseArabic[question] || database[question];
+
+        if (answer) {
+            addMessage(answer, false); // Afficher la réponse du chatbot
+        } else {
+            // Si la question n'a pas de réponse, l'envoyer au backend
+            try {
+                const response = await fetch('http://localhost:5000/save-question', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                        email: "yassinelamachi16@gmail.com" // Remplacez par l'e-mail de l'utilisateur si disponible
+                    })
+                });
+
+                if (response.ok) {
+                    addMessage("Nous n'avons pas de réponse à cette question. Nous la traiterons bientôt !", false);
+                } else {
+                    addMessage("Une erreur s'est produite. Veuillez réessayer plus tard.", false);
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'envoi de la question au backend :", error);
+                addMessage("Une erreur s'est produite. Veuillez réessayer plus tard.", false);
+            }
+        }
+
         userInput.value = ''; // Vider la zone de saisie
 
         // Passer à la question suivante après un court délai
