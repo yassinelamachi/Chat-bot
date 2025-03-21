@@ -10,6 +10,8 @@ const translateBtn = document.getElementById('translate-btn');
 const darkModeBtn = document.getElementById('dark-mode-btn');
 const body = document.body;
 
+
+// Base de données en français
 const database = {
     "Qu'est-ce que SUPTECH SANTÉ ?": "SUPTECH SANTÉ est une école spécialisée en génie biomédical et en techniques de santé.",
     "Où se trouvent les campus de SUPTECH SANTÉ ?": "Campus Essaouira : Avenue Al Akwas | Campus Mohammedia : Zone Industrielle.",
@@ -25,6 +27,7 @@ const database = {
     "SUPTECH SANTÉ a-t-elle des partenaires ?": "Oui, avec plus de 50 partenaires académiques et industriels.",
 };
 
+// Base de données en arabe
 const databaseArabic = {
     "ما هي SUPTECH SANTÉ؟": "SUPTECH SANTÉ هي مدرسة متخصصة في الهندسة الطبية وتقنيات الصحة.",
     "أين تقع فروع SUPTECH SANTÉ؟": "فرع الصويرة: شارع الأقواس | فرع المحمدية: المنطقة الصناعية.",
@@ -40,27 +43,20 @@ const databaseArabic = {
     "هل لدى SUPTECH SANTÉ شركاء؟": "نعم، مع أكثر من 50 شريكًا أكاديميًا وصناعيًا.",
 };
 
-let currentLanguage = 'fr';
-let isDarkMode = false;
+let currentLanguage = 'fr'; // Par défaut en français
+let isDarkMode = false; // Par défaut en mode clair
 
 const questions = Object.keys(database);
 let currentQuestionIndex = 0;
 
-function addMessage(message, isUser) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('chat-message');
-    messageElement.classList.add(isUser ? 'user-message' : 'bot-message');
-    messageElement.textContent = message;
-    chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
+// Afficher la première question
 startQuestionsBtn.addEventListener('click', () => {
     startQuestionsBtn.classList.add('hidden');
     currentQuestionDiv.classList.remove('hidden');
     showQuestion();
 });
 
+// Afficher la question actuelle
 function showQuestion() {
     if (currentQuestionIndex < questions.length) {
         questionText.textContent = currentLanguage === 'fr' ? questions[currentQuestionIndex] : Object.keys(databaseArabic)[currentQuestionIndex];
@@ -71,44 +67,65 @@ function showQuestion() {
     }
 }
 
+// Remplir la zone de saisie avec la question sélectionnée
 questionText.addEventListener('click', () => {
     userInput.value = currentLanguage === 'fr' ? questions[currentQuestionIndex] : Object.keys(databaseArabic)[currentQuestionIndex];
 });
 
-sendBtn.addEventListener('click', async () => {
+// Fonction pour ajouter un message dans le chat
+function addMessage(message, isUser) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('chat-message');
+    messageElement.classList.add(isUser ? 'user-message' : 'bot-message');
+    messageElement.textContent = message;
+    chatBox.appendChild(messageElement);
+
+    // Faire défiler automatiquement vers le bas
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Envoyer une question
+sendBtn.addEventListener('click', () => {
     const question = userInput.value.trim();
     if (question) {
-        addMessage(question, true);
-        const answer = currentLanguage === 'fr' ? database[question] || databaseArabic[question] || await getAIResponse(question) : databaseArabic[question] || database[question] || await getAIResponse(question);
-        addMessage(answer, false);
-        userInput.value = '';
+        addMessage(question, true); // Afficher la question de l'utilisateur
+        const answer = currentLanguage === 'fr' ? database[question] || databaseArabic[question] || "Je ne comprends pas votre question." : databaseArabic[question] || database[question] || "لا أفهم سؤالك";
+        addMessage(answer, false); // Afficher la réponse du chatbot
+        userInput.value = ''; // Vider la zone de saisie
+
+        // Passer à la question suivante après un court délai
         setTimeout(() => {
             currentQuestionIndex++;
             showQuestion();
-        }, 1000);
+        }, 1000); // Délai de 1 seconde avant de passer à la question suivante
     }
 });
 
+// Envoyer une question avec la touche Entrée
 userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         sendBtn.click();
     }
 });
 
+// Traduction français-arabe
 translateBtn.addEventListener('click', () => {
     currentLanguage = currentLanguage === 'fr' ? 'ar' : 'fr';
     translateBtn.textContent = currentLanguage === 'fr' ? 'Traduire en Arabe' : 'ترجمة إلى الفرنسية';
-    currentQuestionIndex = 0;
-    showQuestion();
+    currentQuestionIndex = 0; // Réinitialiser l'index des questions
+    showQuestion(); // Recharger la question actuelle dans la nouvelle langue
 });
 
+// Basculer entre le mode sombre et le mode clair
 darkModeBtn.addEventListener('click', () => {
     isDarkMode = !isDarkMode;
     body.classList.toggle('dark-mode', isDarkMode);
     darkModeBtn.textContent = isDarkMode ? 'Mode Clair' : 'Mode Sombre';
 });
 
+// Afficher les suggestions au chargement de la page
 showQuestion();
+
 document.getElementById('quiz-btn').addEventListener('click', () => {
     window.location.href = 'quiz.html';
 });
